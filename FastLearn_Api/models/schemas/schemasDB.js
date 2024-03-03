@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const extendSchema = require('mongoose-extend-schema');
 const db = require('../connections/connectionDB').DB;
 const bcrypt = require('bcrypt');
 
@@ -61,14 +60,7 @@ studentSchema.pre('save', function(next){
 });
 // Schema Profile user
 const profileSchema = mongoose.Schema({
-    teacher_id: {
-        type: ObjectId,
-		ref: 'teachers'
-    },
-    student_id: {
-        type: ObjectId,
-		ref: 'students'
-    },
+    user_id: ObjectId,
     name: String,
     lastname: String,
     profession: String,

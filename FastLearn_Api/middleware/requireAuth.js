@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/schemas/schemasDB').user;
+const Teacher = require('../models/schemas/schemasDB').teacher;
+const Student = require('../models/schemas/schemasDB').student;
 
 module.exports = (req, res, next) => {
     const { authorization } = req.headers;
@@ -11,8 +12,14 @@ module.exports = (req, res, next) => {
         if(err){
             return res.status(404).send({error: 'el usuario no existe'});
         }
-        const { userId } = payload;
-        const user = await User.findById(userId);
+        const { typeUsr, userId } = payload;
+        let user;
+        if(typeUsr == "st"){
+            user = await Student.findById(userId);
+        }else if(typeUsr == "mrs"){
+            user = await Teacher.findById(userId);
+        }
+        req.tp = typeUsr;
         req.user = user;
         next();
     });

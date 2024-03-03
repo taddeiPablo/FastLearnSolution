@@ -17,7 +17,8 @@ module.exports = {
                     teacher = new TeacherModel(
                         {
                             email: email,
-                            password: password
+                            password: password,
+                            active: true
                         }
                     );
                     await teacher.save();
@@ -43,7 +44,8 @@ module.exports = {
                     student = new StudentModel(
                         {
                             email: email,
-                            password: password
+                            password: password,
+                            active: true
                         }
                     );
                     await student.save();
@@ -71,7 +73,7 @@ module.exports = {
                         return res.status(500).send({error: "unexpected error"});
                     }
                     if(isMatch){
-                        const token = jwt.sign({userId: teacher._id}, process.env.AUTH_KEY, { expiresIn: '1h'});
+                        const token = jwt.sign({typeUsr: "mrs", userId: teacher._id}, process.env.AUTH_KEY, { expiresIn: '1h'});
                         return res.status(200).send({success: token});
                     }else{
                         return res.status(403).send({error: "invalid password"});        
@@ -99,7 +101,7 @@ module.exports = {
                         return res.status(500).send({error: "unexpected error"});
                     }
                     if(isMatch){
-                        const token = jwt.sign({userId: student._id}, process.env.AUTH_KEY, { expiresIn: '1h'});
+                        const token = jwt.sign({typeUsr: "st", userId: student._id}, process.env.AUTH_KEY, { expiresIn: '1h'});
                         return res.status(200).send({success: token});
                     }else{
                         return res.status(403).send({error: "invalid password"});        
@@ -116,7 +118,7 @@ module.exports = {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
             let teacher = { 
-                email: req.teacher.email
+                email: req.user.email
             };
             return res.status(200).send({success: teacher});
         } catch (error) {
@@ -127,7 +129,7 @@ module.exports = {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
             let student = { 
-                email: req.student.email
+                email: req.user.email
             };
             return res.status(200).send({success: student });
         } catch (error) {
@@ -137,10 +139,10 @@ module.exports = {
     updateTeacher: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         const { email, password, active } = req.body;
-        const filter = { _id: req.teacher._id };
+        const filter = { _id: req.user._id };
         const teacher = await TeacherModel.findOne(filter);
         if(!teacher){
-            return res.status(404).send({error: 'User does not exist'});
+            return res.status(404).send({error: 'Teacher does not exist'});
         }
         try {
             if(teacher.email != email && email !="" && email != undefined)
@@ -153,9 +155,33 @@ module.exports = {
                 return res.status(500).send({error: 'the update failed, the field cannot be empty'});
             }
             await teacher.save();
-            return res.status(200).send({success: 'User updated'});
+            return res.status(200).send({success: 'Teacher updated'});
         } catch (error) {
-            return res.status(401).send({error: 'unexpected error'});
+            return res.status(401).send({error: `unexpected error: ${error.message}`});
+        }
+    },
+    updateStudent: async (req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin','*');
+        const { email, password, active } = req.body;
+        const filter = { _id: req.user._id };
+        const student = await StudentModel.findOne(filter);
+        if(!student){
+            return res.status(404).send({error: 'Student does not exist'});
+        }
+        try {
+            if(student.email != email && email !="" && email != undefined)
+                student.email = email;
+            if(student.active != active && active != undefined)
+                student.active = active;
+            if(password !="" && password != undefined){
+                student.password = password;
+            }else{
+                return res.status(500).send({error: 'the update failed, the field cannot be empty'});
+            }
+            await student.save();
+            return res.status(200).send({success: 'Student updated'});
+        } catch (error) {
+            return res.status(401).send({error: `unexpected error : ${error.message}`});
         }
     }
 }
