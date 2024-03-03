@@ -6,6 +6,11 @@ module.exports = {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
             let categories = await categoryModel.find({});
+            if(categories.length == 0){
+                // aqui cargar las categorias por primera vez solo una unica vez
+                console.log("categorias la primera vez");
+                console.log(categories.length);
+            }
             if(!categories){
                 return res.status(404).send({error: ''});
             }

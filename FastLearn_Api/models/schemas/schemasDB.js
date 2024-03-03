@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const extendSchema = require('mongoose-extend-schema');
 const db = require('../connections/connectionDB').DB;
 const bcrypt = require('bcrypt');
 
@@ -8,39 +9,65 @@ var schema = mongoose.Schema,
 // declaramos trigger para user_schema en este caso un pre para encriptar el password antes de 
 // el envio a la base de datos.
 
-// Schema users
-const userSchema = mongoose.Schema({
-    username: String,
-    password: String,
+// Schema Teacher
+const teacherSchema = mongoose.Schema({
     email: String,
-    isStudent: String,
-    isTeacher: String,
+    password: String,
     active: Boolean
 });
 // aqui declaro el pre, aqui se realiza el proceso de encriptacion del password ingresado
-userSchema.pre('save', function(next) {
-    const user = this;
-    if(!user.isModified('password')){
+teacherSchema.pre('save', function(next){
+    const teacher = this;
+    if(!teacher.isModified('password')){
         return next();
     }
     bcrypt.genSalt(10, (err, salt) => {
         if(err){
             return next(err);
         }
-        bcrypt.hash(user.password, salt, (err, hash) => {
+        bcrypt.hash(teacher.password, salt, (err, hash) => {
             if(err){
                 return next(err);
             }
-            user.password = hash;
+            teacher.password = hash;
+            next();
+        });
+    });
+});
+// Schema Student
+const studentSchema = mongoose.Schema({
+    email: String,
+    password: String,
+    active: Boolean
+});
+// aqui declaro el pre, aqui se realiza el proceso de encriptacion del password ingresado
+studentSchema.pre('save', function(next){
+    const student = this;
+    if(!student.isModified('password')){
+        return next();
+    }
+    bcrypt.genSalt(10, (err, salt) => {
+        if(err){
+            return next(err);
+        }
+        bcrypt.hash(student.password, salt, (err, hash) => {
+            if(err){
+                return next(err);
+            }
+            student.password = hash;
             next();
         });
     });
 });
 // Schema Profile user
 const profileSchema = mongoose.Schema({
-    user_id: {
+    teacher_id: {
         type: ObjectId,
-		ref: 'users'
+		ref: 'teachers'
+    },
+    student_id: {
+        type: ObjectId,
+		ref: 'students'
     },
     name: String,
     lastname: String,
@@ -65,7 +92,9 @@ const CoursesSchema = mongoose.Schema({
     image: Buffer,
     id_category: Number,
     price: Number,
-    closed: Boolean
+    closed: Boolean,
+    finished: Boolean,
+    Percentage: Number
 });
 // Schema - pildora para los cursos
 const PillsSchema = mongoose.Schema({
@@ -77,7 +106,6 @@ const PillsSchema = mongoose.Schema({
         ref: 'courses'
     }
 });
-
 // Schema Question - preguntas que pueden tener las pildoras
 const QuestionarySchema = mongoose.Schema({
     questionArray: [{
@@ -95,9 +123,9 @@ const QuestionarySchema = mongoose.Schema({
 });
 // isSteacher - si el usuario es profesor
 const created_coursesSchema = mongoose.Schema({
-    user_id: {
+    teacher_id: {
         type: ObjectId,
-        ref: 'users'
+        ref: 'teachers'
     },
     course_id: {
         type: ObjectId,
@@ -106,30 +134,53 @@ const created_coursesSchema = mongoose.Schema({
 });
 // isStudent - si el usuario es estudiante
 const subcribe_coursesSchema = mongoose.Schema({
-    user_id: {
+    student_id: {
         type: ObjectId,
-        ref: 'users'
+        ref: 'students'
     },
     course_id: {
         type: ObjectId,
         ref: 'courses'
+    }
+});
+// aqui coleccion para unir los comentarios y ratings a los estudiantes o profesores con los cursos
+const comments_and_ratingsSchema = mongoose.Schema({
+    teacher_id: {
+        type: ObjectId,
+        ref: 'teachers'
+    },
+    student_id: {
+        type: ObjectId,
+        ref: 'students'
+    },
+    course_id: {
+        type: ObjectId,
+        ref: 'courses'
+    },
+    comment_id: {
+        type: ObjectId,
+        ref: 'comments'
+    },
+    rating_id: {
+        type: ObjectId,
+        ref: 'ratings'
     }
 });
 // guardado de comentarios de alumnos
 const CommentsSchema = mongoose.Schema({
-    comment: String,
-    user_id: {
+    comment: String
+    /*user_id: {
         type: ObjectId,
         ref: 'users'
     },
     course_id: {
         type: ObjectId,
         ref: 'courses'
-    }
+    }*/
 });
 // guardado de ratings puntuacion del cursos dada por los alumnos
 const RatingsSchema = mongoose.Schema({
-    rating: Number,
+    rating: Number/*,
     user_id: {
         type: ObjectId,
         ref: 'users'
@@ -137,31 +188,36 @@ const RatingsSchema = mongoose.Schema({
     course_id:{
         type: ObjectId,
         ref: 'courses'
-    }
+    }*/
 });
 
 // models for schema
-const userModel = db.model('users', userSchema);
+//const userModel = db.model('users', userSchema);
+const teacherModel = db.model('teachers', teacherSchema);
+const studentModel = db.model('students', studentSchema);
 const profileModel = db.model('profiles', profileSchema);
 const coursesModel = db.model('courses', CoursesSchema);
 const pillsModel = db.model('pills', PillsSchema);
 const questionariesModel = db.model('questions', QuestionarySchema);
 const created_coursesModel = db.model('createdCourse', created_coursesSchema);
 const subcribe_coursesModel = db.model('assignedCourse', subcribe_coursesSchema);
+const comment_and_ratingsModel = db.model('comment_and_ratings', comments_and_ratingsSchema);
 const commentModel = db.model('comment', CommentsSchema);
 const ratingModel = db.model('rating', RatingsSchema);
 const categoriesModel = db.model('categories', categoriesSchema);
 
 // devolvemos la entidad creada
 module.exports = {
-    category: categoriesModel,
-    user: userModel,
+    teacher: teacherModel,
+    student: studentModel,
     profile: profileModel,
+    category: categoriesModel,
     course: coursesModel,
     pills: pillsModel,
     questionary: questionariesModel,
     createdCourse: created_coursesModel,
     subcribeCourse: subcribe_coursesModel,
     comment: commentModel,
-    rating: ratingModel
+    rating: ratingModel,
+    commentAndRating: comment_and_ratingsModel
 };
