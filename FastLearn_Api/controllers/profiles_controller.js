@@ -1,5 +1,5 @@
 const ProfileModel = require('../models/schemas/schemasDB').profile;
-const ProfileEntityModel = require('../models/schemas/schemasDB').profileEntity;
+//const ProfileEntityModel = require('../models/schemas/schemasDB').profileEntity;
 
 module.exports = {
     create: async (req, res, next) => {
