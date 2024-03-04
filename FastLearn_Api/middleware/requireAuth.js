@@ -19,7 +19,6 @@ module.exports = (req, res, next) => {
         }else if(typeUsr == "mrs"){
             user = await Teacher.findById(userId);
         }
-        req.tp = typeUsr;
         req.user = user;
         next();
     });
