@@ -10,5 +10,21 @@ module.exports = {
             }
         });
         return result;
+    },
+    loadCategories: () => {
+        let categoryArray = [
+            "Programacion", 
+            "Sistemas", 
+            "Inteligencia Artificial", 
+            "Ciencia y Tecnologia", 
+            "Blockchain y Cripto", 
+            "Ciberseguridad", 
+            "Ocio"
+        ];
+        return categoryArray;
+    },
+    loadPayment: () => {
+        let paymentArray = ["Free","Pay"];
+        return paymentArray;
     }
 };
