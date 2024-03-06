@@ -74,7 +74,12 @@ const profileSchema = mongoose.Schema({
 // Schema categorias (armar las categorias necesarias)
 const categoriesSchema = mongoose.Schema({
     idCategory: Number,
-    value: String
+    category: String
+});
+// pensar en utilizar un array de objects
+const paymentMethodSchema = mongoose.Schema({
+    idPayment: Number,
+    payMethod: String
 });
 // Schema Course 
 const CoursesSchema = mongoose.Schema({
@@ -197,6 +202,7 @@ const comment_and_ratingsModel = db.model('comment_and_ratings', comments_and_ra
 const commentModel = db.model('comment', CommentsSchema);
 const ratingModel = db.model('rating', RatingsSchema);
 const categoriesModel = db.model('categories', categoriesSchema);
+const paymenMethodModel = db.model('payment', paymentMethodSchema);
 
 // devolvemos la entidad creada
 module.exports = {
@@ -211,5 +217,6 @@ module.exports = {
     subcribeCourse: subcribe_coursesModel,
     comment: commentModel,
     rating: ratingModel,
-    commentAndRating: comment_and_ratingsModel
+    commentAndRating: comment_and_ratingsModel,
+    paymentMethod: paymenMethodModel
 };

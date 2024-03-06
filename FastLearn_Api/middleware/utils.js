@@ -12,19 +12,21 @@ module.exports = {
         return result;
     },
     loadCategories: () => {
-        let categoryArray = [
-            "Programacion", 
-            "Sistemas", 
-            "Inteligencia Artificial", 
-            "Ciencia y Tecnologia", 
-            "Blockchain y Cripto", 
-            "Ciberseguridad", 
-            "Ocio"
+        let array_categories = [
+            "Programacion",
+            "Sistemas",
+            "Inteligencia Artificial",
+            "Ciencia y Tecnologia",
+            "Blockchain y Cripto",
+            "Ciberseguridad"
         ];
-        return categoryArray;
+        return array_categories;
     },
-    loadPayment: () => {
-        let paymentArray = ["Free","Pay"];
-        return paymentArray;
+    loadPaymentMethods: () => {
+        let array_paymentMethod = [
+            "Free",
+            "Pay"
+        ];
+        return array_paymentMethod;
     }
 };
