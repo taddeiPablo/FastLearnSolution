@@ -5,6 +5,8 @@ const CommentModel = require('../models/schemas/schemasDB').comment;
 const RatingModel = require('../models/schemas/schemasDB').rating;
 const PillcourseModel = require('../models/schemas/schemasDB').pills;
 const QuestionModel = require('../models/schemas/schemasDB').questionary;
+const categoryModel = require('../models/schemas/schemasDB').category;
+const paymentMethodModel = require('../models/schemas/schemasDB').paymentMethod;
 const utils = require('../middleware/utils');
 
 module.exports = {
@@ -14,20 +16,25 @@ module.exports = {
             let isvalidated = utils.validatefields(req.body);
             if(isvalidated.validated == false)
                 return res.status(409).send({ error: isvalidated.message });
-            const { title, description, created_date, image, categoryId, pmId, price } = req.body;
+            const { title, description, created_date, image, categoryParam, paymentParam, price } = req.body;
             const ExistCourse = await CourseModel.findOne({title: title});
             if(ExistCourse)
                 return res.status(409).send({error: 'el curso ya existe'});
+            let categoryObj = await categoryModel.findOne({category: categoryParam });
+            let paymentObj = await paymentMethodModel.findOne({payMethod: paymentParam});
             let newCourse = new CourseModel(
                 {
                     title: title,
                     description: description,
                     created_date: created_date,
                     image: image,
-                    category_key: categoryId,
-                    payment_key: pmId,
+                    id_category: categoryObj._id != undefined ? categoryObj._id : undefined,
+                    id_payment: paymentObj._id != undefined ? paymentObj._id : undefined,
                     price: price == undefined ? 0 : price,
-                    closed: false
+                    closed: false,
+                    finished: false,
+                    percentage: 0,
+                    quantityPills: 0
                 }
             );
             await newCourse.save().then((saveCourse) => {
@@ -53,20 +60,25 @@ module.exports = {
             let isvalidated = utils.validatefields(req.body);
             if(isvalidated.validated == false)
                 return res.status(409).send({ error: isvalidated.message });
-            const { id, title, description, created_date, image, categorykey, pmkey, price } = req.body;
+            const { id, title, description, created_date, image, categoryParam, paymentParam, price } = req.body;
             const filter = {_id: id};
             const ExistCourse = await CourseModel.findOne(filter);
             if(!ExistCourse)
                 return res.status(404).send({error: 'el curso no existe'});
+            let categoryObj = await categoryModel.findOne({category: categoryParam});
+            let paymentObj = await paymentMethodModel.findOne({payMethod: paymentParam});
             const update = {
                 title: title,
-                course_topic: course_topic,
                 description: description,
                 created_date: created_date,
                 image: image,
-                category_key: categorykey,
-                payment_key: pmkey,
-                price: price
+                id_category: categoryObj._id != undefined ? categoryObj._id : undefined,
+                id_payment: paymentObj._id != undefined ? paymentObj._id : undefined,
+                price: price == undefined ? 0 : price,
+                closed: false,
+                finished: false,
+                percentage: 0,
+                quantityPills: 0
             };
             await CourseModel.findOneAndUpdate(filter, update);
             return res.status(200).send({success: 'el curso se actualizo con exito'});

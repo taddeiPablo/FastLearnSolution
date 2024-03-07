@@ -3,7 +3,7 @@ module.exports = {
     validatefields: (obj) => {
         let result = { "validated": true, "message": "existen campos vacios : "};
         Object.keys(obj).forEach(function(key) {
-            if(!obj[key])
+            if(!obj[key] && key != "closed" && key != "finished" && key != "quantityPills")
             {
                 result.validated = false;
                 result.message += key;

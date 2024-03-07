@@ -87,11 +87,12 @@ const CoursesSchema = mongoose.Schema({
     description: String,
     created_date: String,
     image: Buffer,
-    id_category: Number,
+    id_category: ObjectId,
+    id_payment: ObjectId,
     price: Number,
     closed: Boolean,
-    finished: Boolean,
-    Percentage: Number
+    percentage: Number,
+    quantityPills: Number
 });
 // Schema - pildora para los cursos
 const PillsSchema = mongoose.Schema({
@@ -138,7 +139,9 @@ const subcribe_coursesSchema = mongoose.Schema({
     course_id: {
         type: ObjectId,
         ref: 'courses'
-    }
+    },
+    approval: Boolean,
+    inProgress: Boolean
 });
 // aqui coleccion para unir los comentarios y ratings a los estudiantes o profesores con los cursos
 const comments_and_ratingsSchema = mongoose.Schema({
