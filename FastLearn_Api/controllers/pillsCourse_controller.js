@@ -18,12 +18,19 @@ module.exports = {
     },
     create: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
-        const { topic_id, file } = req.body;
+        const { title, description, file, course_id } = req.body;
         try {
+            let isvalidated = utils.validatefields(req.body);
+            if(isvalidated.validated == false){
+                return res.status(409).send({ error: isvalidated.message });
+            }
+            //TODO: pensar como enviar el video en formato de bits talvez
             let newPill = new PillCourseModel(
                 {
+                    title: title,
+                    description: description,
                     file: file,
-                    topic_id: topic_id
+                    course_id: course_id
                 }
             );
             newPill.save();

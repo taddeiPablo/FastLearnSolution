@@ -30,7 +30,7 @@ app.use('/api/profiles', profilesRouter);
 app.use('/api/options', optionsRouter);
 app.use('/api/courses', coursesRouter);
 app.use('/api/topics', topicsRouter);
-app.use('/api/pillsCourse', pillsCourseRouter);
+app.use('/api/pills', pillsCourseRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

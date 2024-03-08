@@ -41,7 +41,7 @@ module.exports = {
                 if(saveCourse === newCourse){
                     let createdCourse = new CreatedCModel(
                         {
-                            user_id: req.user._id,
+                            teacher_id: req.user._id,
                             course_id: saveCourse._id
                         }
                     );
