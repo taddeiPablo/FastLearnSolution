@@ -201,7 +201,7 @@ const pillsModel = db.model('pills', PillsSchema);
 const questionariesModel = db.model('questions', QuestionarySchema);
 const created_coursesModel = db.model('createdCourse', created_coursesSchema);
 const subcribe_coursesModel = db.model('assignedCourse', subcribe_coursesSchema);
-const comment_and_ratingsModel = db.model('comment_and_ratings', comments_and_ratingsSchema);
+const commentAndRatingsModel = db.model('comment_and_ratings', comments_and_ratingsSchema);
 const commentModel = db.model('comment', CommentsSchema);
 const ratingModel = db.model('rating', RatingsSchema);
 const categoriesModel = db.model('categories', categoriesSchema);
@@ -220,6 +220,6 @@ module.exports = {
     subcribeCourse: subcribe_coursesModel,
     comment: commentModel,
     rating: ratingModel,
-    commentAndRating: comment_and_ratingsModel,
+    commentAndRating: commentAndRatingsModel,
     paymentMethod: paymenMethodModel
 };

@@ -3,6 +3,7 @@ const CreatedCModel = require('../models/schemas/schemasDB').createdCourse;
 const SubcribedCModel = require('../models/schemas/schemasDB').subcribeCourse;
 const CommentModel = require('../models/schemas/schemasDB').comment;
 const RatingModel = require('../models/schemas/schemasDB').rating;
+const CommentsRatings = require('../models/schemas/schemasDB').commentAndRating;
 const PillcourseModel = require('../models/schemas/schemasDB').pills;
 const QuestionModel = require('../models/schemas/schemasDB').questionary;
 const categoryModel = require('../models/schemas/schemasDB').category;
@@ -57,17 +58,36 @@ module.exports = {
     update: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
-            let isvalidated = utils.validatefields(req.body);
+            //TODO: REALIZAR UNAS ACTUALIZACIONES DE CURSOS
+            /*let isvalidated = utils.validatefields(req.body);
             if(isvalidated.validated == false)
-                return res.status(409).send({ error: isvalidated.message });
-            const { id, title, description, created_date, image, categoryParam, paymentParam, price } = req.body;
-            const filter = {_id: id};
+                return res.status(409).send({ error: isvalidated.message });*/
+            const { courseId } = req.params;
+            const { title, description, created_date, image, categoryParam, paymentParam, price } = req.body;
+            const filter = {_id: courseId };
             const ExistCourse = await CourseModel.findOne(filter);
             if(!ExistCourse)
-                return res.status(404).send({error: 'el curso no existe'});
-            let categoryObj = await categoryModel.findOne({category: categoryParam});
-            let paymentObj = await paymentMethodModel.findOne({payMethod: paymentParam});
-            const update = {
+                return res.status(404).send({error: 'el curso no existe'});           
+            const update = {};
+            if(utils.ValidateUpdateFields(title) != "")
+                update.title = title;
+            if(utils.ValidateUpdateFields(description) != "")
+                update.description = description;
+            if(utils.ValidateUpdateFields(created_date) != "")
+                update.created_date = created_date;
+            if(utils.ValidateUpdateFields(image) != "")
+                update.image = image;
+            let categoryObj;
+            if(utils.ValidateUpdateFields(categoryParam) != "")
+                categoryObj = await categoryModel.findOne({category: categoryParam});
+                update.id_category = categoryObj._id != undefined ? categoryObj._id : undefined;
+            let paymentObj;
+            if(utils.ValidateUpdateFields(paymentParam) != "")
+                paymentObj = await paymentMethodModel.findOne({payMethod: paymentParam});
+                update.id_payment = paymentObj._id != undefined ? paymentObj._id : undefined;
+            update.price = price == undefined ? 0 : price;
+            
+            /*const update = {
                 title: title,
                 description: description,
                 created_date: created_date,
@@ -79,7 +99,7 @@ module.exports = {
                 finished: false,
                 percentage: 0,
                 quantityPills: 0
-            };
+            };*/
             await CourseModel.findOneAndUpdate(filter, update);
             return res.status(200).send({success: 'el curso se actualizo con exito'});
         } catch (error) {
@@ -177,8 +197,9 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
-        const { id } = req.body; //aqui recibimos el id del curso
-        const filter = { _id: id };
+        const { courseId } = req.params;
+        //const { id } = req.body; //aqui recibimos el id del curso
+        const filter = { _id: courseId };
         try {
             let courseDelete = await CourseModel.findOneAndDelete(filter); //deleteo el curso
             let filterCourse = { course_id: courseDelete._id };
@@ -187,6 +208,7 @@ module.exports = {
                 let pilldelete = await PillcourseModel.findOneAndDelete(filterCourse); // deleteo las pildoras
                 if(!pilldelete)
                     await QuestionModel.delete({ pill_id: pilldelete._id }); // deleteo las preguntas
+                // aqui cambiar POR LA NUEVA TABLA "comments_and_ratingsSchema"
                 await CommentModel.delete(filterCourse); // deleteo los comments
                 await RatingModel.delete(filterCourse); // deleteo los ratings
             }

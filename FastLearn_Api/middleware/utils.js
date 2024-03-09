@@ -28,5 +28,12 @@ module.exports = {
             "Pay"
         ];
         return array_paymentMethod;
+    },
+    ValidateUpdateFields: (field) => {
+        let result = "";
+        if(field != "" && field != undefined){
+            result = field;
+        }
+        return result;
     }
 };
