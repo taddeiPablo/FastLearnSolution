@@ -20,6 +20,7 @@ module.exports = (req, res, next) => {
             user = await Teacher.findById(userId);
         }
         req.user = user;
+        req.type_usr = typeUsr;
         next();
     });
 };

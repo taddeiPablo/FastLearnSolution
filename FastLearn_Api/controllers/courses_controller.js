@@ -209,8 +209,9 @@ module.exports = {
                 if(!pilldelete)
                     await QuestionModel.delete({ pill_id: pilldelete._id }); // deleteo las preguntas
                 // aqui cambiar POR LA NUEVA TABLA "comments_and_ratingsSchema"
-                await CommentModel.delete(filterCourse); // deleteo los comments
-                await RatingModel.delete(filterCourse); // deleteo los ratings
+                //await CommentModel.delete(filterCourse); // deleteo los comments
+                //await RatingModel.delete(filterCourse); // deleteo los ratings
+                await CommentsRatings.delete(filterCourse);
             }
             return res.status(200).send({success: 'curso eliminado con exito'});
         } catch (error) {
@@ -220,16 +221,39 @@ module.exports = {
     },
     addComment: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
-        const { idcourse, comment } = req.body;
+        const { courseId, comment } = req.body;
         try {
+            /**
+             * 
+                    course_id: idcourse,
+             * ,
+                    user_id: req.user._id
+             *
             let newcomment = new CommentModel(
                 {
-                    course_id: idcourse,
-                    comment: comment,
-                    user_id: req.user._id
+                    comment: comment
                 }
             );
-            newcomment.save();
+            newcomment.save();*/
+            let newComment = new CommentModel(
+                {
+                    comment: comment
+                }
+            );
+            await newComment.save().then((saveComment) => {
+                if(newComment === saveComment){
+                    //let userId = req.type_usr == "" ? req.user._id
+                    let commentsRatings = new CommentsRatings({
+                        course_id: courseId,
+                        comment_id: saveComment._id
+                    });
+                    if(req.type_usr == "st")
+                        commentsRatings.student_id = req.user._id;
+                    if(req.type_usr == "mrs")
+                        commentsRatings.teacher_id = req.user._id;
+                    commentsRatings.save();
+                }
+            });
             return res.status(200).send({success: 'el comentario se realizo con exito'});   
         } catch (error) {
             return res.status(500).send({error: 'error inesperado'});
@@ -237,14 +261,29 @@ module.exports = {
     },
     addRating: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
-        const { idcourse, rating } = req.body;
+        const { courseId, rating } = req.body;
         try {
-            let newrating = new RatingModel({
-                course_id: idcourse,
+            /**
+             *  course_id: idcourse,
                 rating: rating,
                 user_id: req.user._id
+             */
+            let newRating = new RatingModel({
+                rating: rating
             });
-            newrating.save();
+            await newRating.save().then((saveRating) => {
+                if(newRating === saveRating){
+                    let commentsRatings = new CommentsRatings({
+                        course_id: courseId,
+                        rating_id: saveRating._id
+                    });
+                    if(req.type_usr == "st")
+                        commentsRatings.student_id = req.user._id;
+                    if(req.type_usr == "mrs")
+                        commentsRatings.teacher_id = req.user._id;
+                    commentsRatings.save();
+                }
+            });
             return res.status(200).send({success: 'rating subido con exito'});
         } catch (error) {
             return res.status(500).send({error: 'error inesperado'});
