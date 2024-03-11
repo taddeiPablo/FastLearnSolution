@@ -58,10 +58,6 @@ module.exports = {
     update: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
-            //TODO: REALIZAR UNAS ACTUALIZACIONES DE CURSOS
-            /*let isvalidated = utils.validatefields(req.body);
-            if(isvalidated.validated == false)
-                return res.status(409).send({ error: isvalidated.message });*/
             const { courseId } = req.params;
             const { title, description, created_date, image, categoryParam, paymentParam, price } = req.body;
             const filter = {_id: courseId };
@@ -69,43 +65,36 @@ module.exports = {
             if(!ExistCourse)
                 return res.status(404).send({error: 'el curso no existe'});           
             const update = {};
-            if(utils.ValidateUpdateFields(title) != "")
+            if(utils.ValidateUpdateFields(title) != ""){
                 update.title = title;
-            if(utils.ValidateUpdateFields(description) != "")
+            }
+            if(utils.ValidateUpdateFields(description) != ""){
                 update.description = description;
-            if(utils.ValidateUpdateFields(created_date) != "")
+            }
+            if(utils.ValidateUpdateFields(created_date) != ""){
                 update.created_date = created_date;
-            if(utils.ValidateUpdateFields(image) != "")
+            }
+            if(utils.ValidateUpdateFields(image) != ""){
                 update.image = image;
+            }
             let categoryObj;
-            if(utils.ValidateUpdateFields(categoryParam) != "")
+            if(utils.ValidateUpdateFields(categoryParam) != ""){
                 categoryObj = await categoryModel.findOne({category: categoryParam});
                 update.id_category = categoryObj._id != undefined ? categoryObj._id : undefined;
+            }
             let paymentObj;
-            if(utils.ValidateUpdateFields(paymentParam) != "")
+            if(utils.ValidateUpdateFields(paymentParam) != ""){
                 paymentObj = await paymentMethodModel.findOne({payMethod: paymentParam});
                 update.id_payment = paymentObj._id != undefined ? paymentObj._id : undefined;
+            }
             update.price = price == undefined ? 0 : price;
-            
-            /*const update = {
-                title: title,
-                description: description,
-                created_date: created_date,
-                image: image,
-                id_category: categoryObj._id != undefined ? categoryObj._id : undefined,
-                id_payment: paymentObj._id != undefined ? paymentObj._id : undefined,
-                price: price == undefined ? 0 : price,
-                closed: false,
-                finished: false,
-                percentage: 0,
-                quantityPills: 0
-            };*/
             await CourseModel.findOneAndUpdate(filter, update);
             return res.status(200).send({success: 'el curso se actualizo con exito'});
         } catch (error) {
-            return res.status(500).send({error: ''});
+            return res.status(500).send({error: 'Hubo un error inesperado'});
         }
     },
+    //todo: aqui cerramos un curso no se elimina luego se podria reabir nuevamente
     closed_course: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         const { id, closed } = req.body;
@@ -153,18 +142,28 @@ module.exports = {
             return res.status(500).send({error: 'error inesperado'});
         }
     },
+    //todo : listado de cursos creados por un profesor
     getListCourseCreated: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
-            const allcourseCreated = await CreatedCModel.find({user_id: req.user._id}).populate('course_id').exec();
+            const allcourseCreated = await CreatedCModel.find({teacher_id: req.user._id})
+                                                        .populate('course_id').exec();
+            const allCategories = await categoryModel.find({});
+            const allPayments = await paymentMethodModel.find({});
             const results = [];
             allcourseCreated.forEach(item =>{
-                const { title, course_topic, description, image } = item.course_id;
+                const { _id, title, description, created_date, image, id_category, id_payment, price } = item.course_id;
+                let categoryName = allCategories.find(cat => cat._id.toString() == id_category.toString()).category;
+                let paymentName = allPayments.find(pay => pay._id.toString() == id_payment.toString()).payMethod;
                 const jsonresult = {
+                    "course_id": _id,
                     "Title": title,
-                    "CourseTopic": course_topic,
                     "Description": description,
-                    "Image": image
+                    "Created_Date": created_date,
+                    "Category": categoryName,
+                    "Payment": paymentName,
+                    "Image": image,
+                    "Price": price
                 }
                 results.push(jsonresult);
             });
@@ -174,18 +173,28 @@ module.exports = {
             return res.status(500).send({error: 'error de mierda'});
         }
     },
+    //todo : listado de cursos creados por un alumno
     getListCourseSubscribed: async (req, res, next) => { 
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
-            const allsubcribeb_course = await SubcribedCModel.find({user_id: req.user_id}).populate('course_id').exec();
+            const allsubcribeb_course = await SubcribedCModel.find({student_id: req.user_id})
+                                                             .populate('course_id').exec();
+            const allCategories = await categoryModel.find({});
+            const allPayments = await paymentMethodModel.find({});
             const results = [];
             allsubcribeb_course.forEach(item => {
-                const { title, course_topic, description, image } = item.course_id;
+                const { _id, title, description, created_date, image, id_category, id_payment, price } = item.course_id;
+                let categoryName = allCategories.find(cat => cat._id.toString() == id_category.toString()).category;
+                let paymentName = allPayments.find(pay => pay._id.toString() == id_payment.toString()).payMethod;
                 const jsonresult = {
+                    "course_id": _id,
                     "Title": title,
-                    "CourseTopic": course_topic,
                     "Description": description,
-                    "Image": image
+                    "Created_Date": created_date,
+                    "Category": categoryName,
+                    "Payment": paymentName,
+                    "Image": image,
+                    "Price": price
                 }
                 results.push(jsonresult);
             });
@@ -193,8 +202,8 @@ module.exports = {
         } catch (error) {
             return res.status(500).send({error: 'error inesperado'});
         }
-
     },
+    //todo: delete de cursos la eliminacion no es virtual sino real
     delete: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         const { courseId } = req.params;

@@ -87,8 +87,14 @@ const CoursesSchema = mongoose.Schema({
     description: String,
     created_date: String,
     image: Buffer,
-    id_category: ObjectId,
-    id_payment: ObjectId,
+    id_category: {
+        type: ObjectId,
+        ref: 'categories'
+    },
+    id_payment: {
+        type: ObjectId,
+        ref: 'payment'
+    },
     price: Number,
     closed: Boolean,
     percentage: Number,
