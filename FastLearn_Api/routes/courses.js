@@ -9,8 +9,12 @@ router.put('/update/:courseId', requireAuth, CourseController.update);
 router.delete('/delete/:courseId', requireAuth, CourseController.delete);
 router.post('/subcribeCourse', requireAuth, CourseController.subcribeCourse);
 router.post('/closedCourse', requireAuth, CourseController.closed_course);
+router.post('/openCourse', requireAuth, courses_controller.open_course);
 router.get('/getListCourseCreated', requireAuth, CourseController.getListCourseCreated);
 router.get('/getListSubscribedCourse', requireAuth, CourseController.getListCourseSubscribed);
+router.get('/getPills/:courseId', requireAuth, CourseController.getPills);
+router.get('/getQuestionary/:courseId', requireAuth, courses_controller.getQuestionary);
+router.get('/getRatingsComments/:courseId', requireAuth, courses_controller.getRatings_And_Comments);
 router.post('/addcomments', requireAuth, courses_controller.addComment);
 router.post('/addratings', requireAuth, courses_controller.addRating);
 

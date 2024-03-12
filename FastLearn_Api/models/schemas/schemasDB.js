@@ -120,7 +120,7 @@ const QuestionarySchema = mongoose.Schema({
     }],
     approved: Boolean,
     disapproved: Boolean,
-    pill_id: {
+    course_id: {
         type: ObjectId,
         ref: 'courses'
     }

@@ -5,7 +5,7 @@ const CommentModel = require('../models/schemas/schemasDB').comment;
 const RatingModel = require('../models/schemas/schemasDB').rating;
 const CommentsRatings = require('../models/schemas/schemasDB').commentAndRating;
 const PillcourseModel = require('../models/schemas/schemasDB').pills;
-const QuestionModel = require('../models/schemas/schemasDB').questionary;
+const QuestionaryModel = require('../models/schemas/schemasDB').questionary;
 const categoryModel = require('../models/schemas/schemasDB').category;
 const paymentMethodModel = require('../models/schemas/schemasDB').paymentMethod;
 const utils = require('../middleware/utils');
@@ -97,27 +97,49 @@ module.exports = {
     //todo: aqui cerramos un curso no se elimina luego se podria reabir nuevamente
     closed_course: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
-        const { id, closed } = req.body;
-        const filter = { _id: id };
-        const ExistCourse = await CourseModel.findOne(filter);
-        if(!ExistCourse) {
-            return res.status(404).send({error: 'el curso no existe'});
+        try {
+            const { course_id, closed } = req.body;
+            const filter = { _id: course_id };
+            const ExistCourse = await CourseModel.findOne(filter);
+            if(!ExistCourse) {
+                return res.status(404).send({error: 'el curso no existe'});
+            }
+            const update = {
+                closed: closed
+            }
+            await CourseModel.findOneAndUpdate(filter, update);
+            return res.status(200).send({success: 'el curso a sido cerrado con exito'});   
+        } catch (error) {
+            return res.status(500).send({error: 'error inesperado'});
         }
-        const update = {
-            closed: closed
+    },
+    open_course: async (req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        try {
+            const { course_id, closed } = req.body;
+            const filter = {_id: course_id};
+            const ExistCourse = await CourseModel.findOne(filter);
+            if(!ExistCourse){
+                return res.status(404).send({error: 'el curso no existe'});
+            }
+            const update = {
+                closed: closed
+            }
+            await CourseModel.findOneAndUpdate(filter, update);
+            return res.status(200).send({success: 'el curso a sido cerrado o abierto con exito'});
+        } catch (error) {
+            return res.status(500).send({error: 'error inesperado'});
         }
-        await CourseModel.findOneAndUpdate(filter, update);
-        return res.status(200).send({success: 'el curso a sido cerrado o abierto con exito'});
     },
     subcribeCourse: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
-            const { idcourse } = req.body;
+            const { course_id } = req.body;
             const newSubcribe = new SubcribedCModel({
-                user_id: req.user._id,
-                course_id: idcourse,
+                student_id: req.user._id,
+                course_id: course_id,
                 approval: false,
-                inprogress: true,
+                inProgress: true,
             });
             await newSubcribe.save();
             return res.status(200).send({success: 'subcripcion realizada con exito'});
@@ -203,24 +225,73 @@ module.exports = {
             return res.status(500).send({error: 'error inesperado'});
         }
     },
+    // aqui obtengo las pildoras de un curso determinado seas alumno o profesor
+    getPills: async (req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin','*');
+        try {
+            const { courseId } = req.params;
+            const filter = {'course_id': courseId};
+            const existPills = await PillcourseModel.find(filter);
+            if(!existPills){
+                return res.status(404).send({error: 'no existen pildoras para este curso aun'});
+            }
+            return res.status(200).send({success: existPills});
+        } catch (error) {
+            return res.status(500).send({error: 'error inesperado'});
+        }
+    },
+    // aqui devuelvo un cuestionario si el curso lo tiene
+    getQuestionary: async (req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        try {
+            const { courseId } = req.params;
+            const filter = {'course_id': courseId};
+            const existQuestion = await QuestionaryModel.findOne(filter);
+            if(!existQuestion){
+                return res.status(404).send({error: 'no existe un cuestionario aun'});
+            }
+            return res.status(200).send({success: existQuestion});
+        } catch (error) {
+            return res.status(500).send({error: 'error inesperado'});
+        }
+    },
+    getRatings_And_Comments: async(req, res, next) => {
+        res.setHeader('Access-Control-Allow-Origin','*');
+        try {
+            const { courseId } = req.params;
+            const filter = {'course_id': courseId};
+            const allcomments = await CommentsRatings.find(filter)
+                                                    .populate('comment_id').exec();
+            console.log(allcomments);
+            return res.status(200).send({success: "info"});
+        } catch (error) {
+            return res.status(500).send({error: 'error inesperado'});
+        }
+    },
     //todo: delete de cursos la eliminacion no es virtual sino real
     delete: async (req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin','*');
         const { courseId } = req.params;
-        //const { id } = req.body; //aqui recibimos el id del curso
         const filter = { _id: courseId };
         try {
             let courseDelete = await CourseModel.findOneAndDelete(filter); //deleteo el curso
             let filterCourse = { course_id: courseDelete._id };
             if(!courseDelete){
-                await CreatedCModel.findOneAndDelete(filterCourse); // deleteo el created
+                // primero deleteamos las pildoras y los formularios de preguntas
+                await PillcourseModel.delete(filterCourse);
+                await QuestionaryModel.delete(filterCourse);
+                // segundo deleteamos los comments and ratings
+                let array = await CommentsRatings.find(filterCourse);
+
+
+                /*await CreatedCModel.findOneAndDelete(filterCourse); // deleteo el created
                 let pilldelete = await PillcourseModel.findOneAndDelete(filterCourse); // deleteo las pildoras
                 if(!pilldelete)
                     await QuestionModel.delete({ pill_id: pilldelete._id }); // deleteo las preguntas
                 // aqui cambiar POR LA NUEVA TABLA "comments_and_ratingsSchema"
                 //await CommentModel.delete(filterCourse); // deleteo los comments
                 //await RatingModel.delete(filterCourse); // deleteo los ratings
-                await CommentsRatings.delete(filterCourse);
+                await CommentsRatings.delete(filterCourse);*/
             }
             return res.status(200).send({success: 'curso eliminado con exito'});
         } catch (error) {
@@ -232,18 +303,6 @@ module.exports = {
         res.setHeader('Access-Control-Allow-Origin','*');
         const { courseId, comment } = req.body;
         try {
-            /**
-             * 
-                    course_id: idcourse,
-             * ,
-                    user_id: req.user._id
-             *
-            let newcomment = new CommentModel(
-                {
-                    comment: comment
-                }
-            );
-            newcomment.save();*/
             let newComment = new CommentModel(
                 {
                     comment: comment
@@ -251,7 +310,6 @@ module.exports = {
             );
             await newComment.save().then((saveComment) => {
                 if(newComment === saveComment){
-                    //let userId = req.type_usr == "" ? req.user._id
                     let commentsRatings = new CommentsRatings({
                         course_id: courseId,
                         comment_id: saveComment._id
@@ -272,11 +330,6 @@ module.exports = {
         res.setHeader('Access-Control-Allow-Origin','*');
         const { courseId, rating } = req.body;
         try {
-            /**
-             *  course_id: idcourse,
-                rating: rating,
-                user_id: req.user._id
-             */
             let newRating = new RatingModel({
                 rating: rating
             });
