@@ -51,7 +51,6 @@ module.exports = {
             });
             return res.status(200).send({success: 'el curso fue creado con exito'});        
         } catch (error) {
-            console.log(error.message);
             return res.status(500).send({error: 'error inesperado'});
         }
     },
@@ -259,13 +258,15 @@ module.exports = {
         res.setHeader('Access-Control-Allow-Origin','*');
         try {
             const { courseId } = req.params;
-            const filter = {'course_id': courseId};
+            const filter = {'course_id': courseId}; //{'comment_id': '65ef1a5ff0e2531bfc82c35a'}; //{'course_id': courseId};
+            //todo: faltaria completar la info ordenarla y tomar los theacher o students correspondientes
             const allcomments = await CommentsRatings.find(filter)
-                                                    .populate('comment_id').exec();
+                                                    .populate('comment_id')
+                                                    .populate('rating_id').exec();
             console.log(allcomments);
             return res.status(200).send({success: "info"});
         } catch (error) {
-            return res.status(500).send({error: 'error inesperado'});
+            return res.status(500).send({error: error.message});
         }
     },
     //todo: delete de cursos la eliminacion no es virtual sino real

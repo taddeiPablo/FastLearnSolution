@@ -165,11 +165,11 @@ const comments_and_ratingsSchema = mongoose.Schema({
     },
     comment_id: {
         type: ObjectId,
-        ref: 'comments'
+        ref: 'comment'
     },
     rating_id: {
         type: ObjectId,
-        ref: 'ratings'
+        ref: 'rating'
     }
 });
 // guardado de comentarios de alumnos
