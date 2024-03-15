@@ -10,7 +10,7 @@ export const Fastlearn_users_Api = createApi({
     reducePath: 'Fastlearn_users_Api',
     baseQuery: fetchBaseQuery({baseUrl: BASE_URL}),
     endpoints: (builder) => ({
-        StudentSignin: builder.query({
+        StudentSignup: builder.query({
             query: (email, password) => ({
                 url: '/student/registration',
                 method: 'POST',
@@ -38,7 +38,7 @@ export const Fastlearn_users_Api = createApi({
                 }
             })
         }),
-        TeacherSignin: builder.query({
+        TeacherSignup: builder.query({
             query: (email, password) => ({
                 url: '/teacher/registration',
                 method: 'POST',
@@ -70,8 +70,8 @@ export const Fastlearn_users_Api = createApi({
 });
 
 export const { 
-    useStudentSigninQuery, 
+    useStudentSignupQuery, 
     useStudentLoginQuery, 
-    useTecherSigninQuery, 
+    useTeacherSignupQuery, 
     useTeacherLoginQuery 
 } = Fastlearn_users_Api;
