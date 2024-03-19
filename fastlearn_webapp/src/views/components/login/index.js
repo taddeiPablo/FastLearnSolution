@@ -1,11 +1,21 @@
 
-import { useState } from "react";
-import { useStudentLoginQuery, useTeacherLoginQuery } from '../../../redux/api/fast_users_api';
+import { useState, useEffect } from "react";
+import { useStudentLoginMutation } from "../../../redux/api/fast_users_api";
 
 export default function Login(props){
     const { type } = props;
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
+    
+    const [
+            StudentLogin, 
+            {
+                data: dataLogin, 
+                isSuccess: isLoginSuccess,
+                isError: isLoginError,
+                error: loginError
+            },
+        ] = useStudentLoginMutation();
 
     const handleInputEmail = ({ target: { value }}) =>{
         setemail(value);
@@ -14,11 +24,21 @@ export default function Login(props){
         setpassword(value);
     };
 
-    const Signin = () => {
-        if(type.contains("student")){
-            // aqui realizar la query hacia la api como estudiante
-        }else if(type.contains("teacher")){
-            // aqui realizar la query hacia la api como profesor
+    useEffect(() => {
+        if(isLoginSuccess){
+            console.log("funcion");
+            console.log(dataLogin);
+        }
+    }, [isLoginSuccess]);
+
+    const login = async (event) => {
+        event.preventDefault();
+        if(type.includes("student")){
+            console.log("student");
+            let body = {"email": email, "password": password};
+            await StudentLogin(body);
+        }else if(type.includes("teacher")){
+            console.log("teacher");
         }
     };
 
@@ -33,7 +53,7 @@ export default function Login(props){
                     <label>
                         <input type="password" name="password" value={password} onChange={handleInputPassword}/>
                     </label>
-                    <button>ingresar</button>
+                    <button onClick={login}>ingresar</button>
                 </form>
             </div>
         </>

@@ -87,9 +87,12 @@ module.exports = {
         }
     },
     loginStudent: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        /*res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');*/
+        res.setHeader("Access-Control-Allow-Headers", "*");
         try {
             const { email, password } = req.body;
+            console.log(req.body);
             let student;
             if(email != "" && email != undefined && password != "" && password != undefined){
                 student = await StudentModel.findOne({email: email});
