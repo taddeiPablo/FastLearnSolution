@@ -5,7 +5,9 @@ const jwt = require('jsonwebtoken');
 
 module.exports = {
     registrationTeacher: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         try {
             const { email, password } = req.body;
             let teacher;
@@ -32,7 +34,9 @@ module.exports = {
         }
     },
     registrationStudent: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         try {
             const { email, password } = req.body;
             let student;
@@ -59,7 +63,9 @@ module.exports = {
         }
     },
     loginTeacher: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         try{
             const { email, password } = req.body;
             let teacher;
@@ -87,8 +93,8 @@ module.exports = {
         }
     },
     loginStudent: async (req, res, next) => {
-        /*res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader('Access-Control-Allow-Methods', '*');*/
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
         res.setHeader("Access-Control-Allow-Headers", "*");
         try {
             const { email, password } = req.body;
@@ -118,7 +124,9 @@ module.exports = {
         }
     },
     GetTeacher: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         try {
             let teacher = { 
                 email: req.user.email
@@ -129,7 +137,9 @@ module.exports = {
         }
     },
     GetStudent: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         try {
             let student = { 
                 email: req.user.email
@@ -140,7 +150,9 @@ module.exports = {
         }
     },
     updateTeacher: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         const { email, password, active } = req.body;
         const filter = { _id: req.user._id };
         const teacher = await TeacherModel.findOne(filter);
@@ -164,7 +176,9 @@ module.exports = {
         }
     },
     updateStudent: async (req, res, next) => {
-        res.setHeader('Access-Control-Allow-Origin','*');
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader('Access-Control-Allow-Methods', '*');
+        res.setHeader("Access-Control-Allow-Headers", "*");
         const { email, password, active } = req.body;
         const filter = { _id: req.user._id };
         const student = await StudentModel.findOne(filter);
