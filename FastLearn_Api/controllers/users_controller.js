@@ -98,7 +98,7 @@ module.exports = {
         res.setHeader("Access-Control-Allow-Headers", "*");
         try {
             const { email, password } = req.body;
-            console.log(req.body);
+            console.log(email + password);
             let student;
             if(email != "" && email != undefined && password != "" && password != undefined){
                 student = await StudentModel.findOne({email: email});

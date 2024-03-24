@@ -6,21 +6,20 @@ import Signup from '../components/signup';
 
 export default function Student(){
     const { pathname } = useLocation();
-
-    const onclickLogin = () => {
-        console.log(pathname);
-    };
-    const onClickSignup = () => {
-        console.log(pathname);
-    };
     return (
         <>
             <div>AQUI VIEW DE STUDENTS</div>
             <h6>aqui armar el toggle cuando comencemos la parte de diseño</h6>
-            <button onClick={onclickLogin}>login ....</button>
-            <Login type={pathname}/>
-            <button onClick={onClickSignup}>signup .....</button>
-            <Signup type={pathname}/>
+            <div className='grid grid-cols-3 gap-4'>
+                <div className='col-span-2'>
+                    <h5> *** SIGNUP ***</h5>
+                    <Signup path={pathname}/>
+                </div>
+                <div className='col-span-1'>
+                    <h5> *** LOGIN *** </h5>
+                    <Login path={pathname}/>
+                </div>
+            </div>
         </>
     )
 }

@@ -19,9 +19,9 @@ export default function Teacher(){
             <div>AQUI VIEW DE TEACHER</div>
             <h6>aqui armar el toggle cuando comencemos la parte de diseño</h6>
             <button onClick={onclickLogin}>login ....</button>
-            <Login type={pathname}/>
+            <Login path={pathname}/>
             <button onClick={onclickSignup}>signup .....</button>
-            <Signup type={pathname}/>
+            <Signup path={pathname}/>
         </>
     )
 }
