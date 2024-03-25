@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { login } from '../../../app/Signup_and_Login';
+import { UserStore } from '../../../store/UserStore';
 
 import '../../components/style/layout.css';
 
@@ -7,22 +8,31 @@ export default function Login(props) {
     const { path } = props;
     const [email, setemail] = useState("");
     const [password, setpassword] = useState("");
-    
+
     const handleInputEmail = ({ target: { value }}) =>{
         setemail(value);
     }
     const handleInputPassword = ({ target: { value }}) => {
         setpassword(value);
     }
+
     const handleLogin = async (e) => {
         e.preventDefault();
-        login(path, email, password)
-            .then(function(response){
-                console.log(response);
+        try {
+            login(path, email, password)
+            .then(function(data){
+                // aca data.success (aqui obtenemos el token)
+                console.log(data.success);
+                // aqui guardo el token del usuario logueado correctamente
+                UserStore.setToken(data.success);
             })
             .catch(function(error){
+                // no devuelve el error
                 console.log(error);
-            });
+            });   
+        } catch (error) {
+            console.log(error);
+        }
     }
     return (
         <>

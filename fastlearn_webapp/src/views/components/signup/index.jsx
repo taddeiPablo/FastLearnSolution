@@ -16,13 +16,19 @@ export default function Signup(props){
     }
     const handleSignup = async (e) => {
         e.preventDefault();
-        signup(path, email, password)
-            .then(function(response){
-                console.log(response);
+        try {
+            signup(path, email, password)
+            .then(function(data){
+                // data.success (mensaje de usuarios creado correctamente)
+                console.log(data.success);
             })
             .catch(function(error){
+                // aqui error
                 console.log(error);
-            });
+            });   
+        } catch (error) {
+            console.log(error);
+        }
     };
     return (
         <> 
