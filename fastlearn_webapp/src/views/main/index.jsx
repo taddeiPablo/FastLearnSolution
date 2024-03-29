@@ -1,16 +1,12 @@
+import Nav from '../components/navigation';
+
 export default function Main(){
     return (
         <>
+            <Nav actionMenu={true} />
             <div>
                 <h1>PAGINA PRINCIPAL DEL SISTEMA</h1>
-            </div>
-            <div>
-                <h4>TEACHER</h4>
-                <a href="/teacher">Teacher</a>
-            </div>
-            <div>
-                <h4>STUDENT</h4>
-                <a href="/student">Student</a>
+                <h3>AQUI DEBERIA IR UN SEARCH PARA BUSCAR CURSOS</h3>
             </div>
         </>
     )

@@ -1,10 +1,21 @@
 import apicall from './api';
 
+
+export const getUser = async (token, pathUsr) => {
+    try {
+        let headers = { headers:{'Authorization': `bearer ${token}`}};
+        const response = await apicall.get(`/users${pathUsr}`, headers );
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const getProfile = async (token) => {
     try {
         let headers = { headers:{'Authorization': `bearer ${token}`}};
         const response = await apicall.get('/profiles/profile', headers );
-        return response.data;
+        return response;
     } catch (error) {
         console.log(error);
     }

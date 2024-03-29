@@ -25,10 +25,10 @@ export default function Login(props) {
             .then(function(data){
                 UserStore.getState().setAuth(true);
                 UserStore.getState().setToken(data.success);
+                UserStore.getState().setPathUser(path);
                 navigate('/Dashboard');
             })
             .catch(function(error){
-                // no devuelve el error
                 console.log(error);
             });   
         } catch (error) {

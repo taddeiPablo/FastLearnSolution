@@ -64,6 +64,6 @@ module.exports = {
         profiles = await ProfileModel.findOne({user_id: req.user._id});
         if(!profiles)
             return res.status(404).send({ error: 'Profile does not exist' });
-        return res.status(200).send({ success: userProfile });
+        return res.status(200).send({ success: profiles });
     }
 };
