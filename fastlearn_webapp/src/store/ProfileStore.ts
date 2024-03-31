@@ -12,8 +12,10 @@ const ProfileStore = create((set) => ({
     fetchUserData: async (token, pathUsr) => {
       set({ fetchUser: {}, loading: true, fetching: true, success: false, error: "" });
       try {
-        const get_User = getUser(token, pathUsr);
-        set({fetchUser: await get_User, loading: false, fetching: false, success: true, error: ""}); 
+        const get_User = await getUser(token, pathUsr);
+        console.log("ingrese aqui en el profile de recontra mierda");
+        console.log(get_User);
+        set({fetchUser: await get_User?.success.email, loading: false, fetching: false, success: true, error: ""}); 
       } catch (error) {
         set({fetchUser: null, loading: false, fetching: false, error: error, success: false});
       }

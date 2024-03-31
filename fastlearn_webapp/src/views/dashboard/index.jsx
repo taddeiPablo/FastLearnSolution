@@ -7,28 +7,27 @@ export default function Dashboard(){
     const pathUsr = UserStore.getState().pathUser;
     console.log(pathUsr);
     const {fetchUserData, fetchProfileData, fetchUser, fetchprofile, loading, fetching, error, success } = Profile();
+    let index = 0;
     const handleCall = async() => {
+        console.log(index++);
         const resp = await fetchUserData(token, pathUsr);
         console.log("ingreso aqui");
         console.log(resp);
         console.log("evaluamos la variable tipo userData");
-        console.log(fetchUser?.success.email);
-        console.log(loading);
-        console.log(fetching);
-        console.log(error);
+        console.log(fetchUser);
+        
         console.log(success);
         console.log("-----------------------------------------");
         console.log("datos del perfil del usuario");
         const resp1 = await fetchProfileData(token);
         console.log(fetchprofile);
-        console.log(loading);
-        console.log(fetching);
-        console.log(error);
         console.log(success);
 
     }
     useEffect(() => {
-        handleCall();
+        if(!success){
+            handleCall();
+        }
     },[]);
     /**
      *  <h1>AQUI DATO DEL USER</h1>
